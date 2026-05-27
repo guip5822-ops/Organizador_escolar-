@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organizador Escolar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue-50:#E6F1FB;--blue-100:#B5D4F4;--blue-200:#85B7EB;
+  --blue-400:#378ADD;--blue-600:#185FA5;--blue-800:#0C447C;--blue-900:#042C53;
+  --green-50:#E1F5EE;--green-600:#0F6E56;--green-800:#085041;
+  --white:#ffffff;--gray-50:#F7F9FC;--gray-100:#EEF2F7;--gray-200:#D8E2EE;
+  --gray-400:#8FA3BE;--gray-600:#4A6282;--gray-900:#0F1E30;
+  --danger:#E24B4A;--danger-bg:#FCEBEB;--warning:#BA7517;--warning-bg:#FAEEDA;
+  --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:24px;
+  --sh-sm:0 1px 4px rgba(15,30,48,.06);--sh-md:0 4px 16px rgba(15,30,48,.10);
+}
+body{font-family:'Nunito',sans-serif;background:var(--gray-50);color:var(--gray-900);min-height:100vh}
+.topbar{background:var(--blue-900);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(4,44,83,.25)}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Sora',sans-serif;font-size:18px;font-weight:700;color:#fff}
+.brand-icon{width:32px;height:32px;background:var(--blue-400);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.topbar-date{font-size:13px;color:var(--blue-200)}
+.mode-bar{background:var(--blue-800);display:flex;border-bottom:2px solid var(--blue-900)}
+.mode-btn{flex:1;max-width:200px;padding:12px 20px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;color:var(--blue-200);background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
+.mode-btn.active{color:#fff;border-bottom-color:#fff}
+.mode-btn:hover:not(.active){color:#fff;background:rgba(255,255,255,.06)}
+.main{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 4rem}
+.section-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.section-title{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;color:var(--blue-900)}
+.section-sub{font-size:13px;color:var(--gray-600);margin-top:3px}
+.server-banner{background:var(--blue-50);border:1.5px solid var(--blue-100);border-radius:var(--r-md);padding:10px 16px;margin-bottom:1.25rem;font-size:12px;color:var(--blue-800);display:flex;align-items:center;gap:8px}
+.server-banner.ok{background:#E1F5EE;border-color:#9FE1CB;color:var(--green-800)}
+.server-banner.err{background:var(--danger-bg);border-color:#F5B5B5;color:var(--danger)}
+.group-panel{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--r-lg);padding:1.5rem;margin-bottom:1.5rem;box-shadow:var(--sh-sm)}
+.group-panel h3{font-size:15px;font-weight:700;color:var(--blue-800);margin-bottom:12px}
+.group-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.group-field{display:flex;flex-direction:column;gap:4px}
+.group-field label{font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:.5px}
+.group-field input{border:1.5px solid var(--gray-200);border-radius:var(--r-sm);padding:9px 12px;font-size:14px;font-family:'Nunito',sans-serif;width:200px;outline:none;transition:border-color .15s}
+.group-field input:focus{border-color:var(--blue-400)}
+.btn-join{background:var(--green-600);color:#fff;border:none;border-radius:var(--r-sm);padding:9px 18px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:background .15s}
+.btn-join:hover{background:var(--green-800)}
+.btn-create{background:var(--blue-600);color:#fff;border:none;border-radius:var(--r-sm);padding:9px 18px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:background .15s}
+.btn-create:hover{background:var(--blue-800)}
+.active-group-bar{background:var(--green-50);border:1.5px solid #9FE1CB;border-radius:var(--r-md);padding:12px 16px;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.agb-left{display:flex;align-items:center;gap:10px}
+.agb-dot{width:10px;height:10px;border-radius:50%;background:var(--green-600);animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.agb-name{font-size:14px;font-weight:700;color:var(--green-800)}
+.agb-code{font-size:12px;color:var(--green-600);background:#fff;border:1px solid #9FE1CB;border-radius:20px;padding:2px 10px;cursor:pointer;font-weight:700}
+.agb-btns{display:flex;gap:8px;align-items:center}
+.btn-refresh{background:var(--green-600);color:#fff;border:none;border-radius:var(--r-sm);padding:6px 12px;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer}
+.btn-leave{background:none;border:1px solid #9FE1CB;border-radius:var(--r-sm);padding:6px 12px;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;color:var(--green-800);cursor:pointer}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:1.5rem}
+.sum-card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--r-md);padding:14px 18px;box-shadow:var(--sh-sm)}
+.sum-label{font-size:12px;color:var(--gray-600);margin-bottom:4px}
+.sum-value{font-size:26px;font-weight:700;color:var(--blue-800);font-family:'Sora',sans-serif}
+.sum-card.urgent .sum-value{color:var(--danger)}
+.sum-card.today .sum-value{color:var(--warning)}
+.toolbar{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;flex-wrap:wrap}
+.toolbar-left{display:flex;gap:8px;flex-wrap:wrap;flex:1}
+.tab{padding:7px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--gray-200);background:var(--white);color:var(--gray-600);transition:all .15s;white-space:nowrap}
+.tab:hover{border-color:var(--blue-400);color:var(--blue-600)}
+.tab.active{background:var(--blue-600);color:#fff;border-color:var(--blue-600)}
+.tab .cnt{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;font-size:11px;font-weight:700;margin-left:5px;background:rgba(255,255,255,.25)}
+.tab:not(.active) .cnt{background:var(--blue-50);color:var(--blue-800)}
+.btn-new{background:var(--blue-600);color:#fff;border:none;border-radius:var(--r-sm);padding:9px 18px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap;font-family:'Nunito',sans-serif}
+.btn-new:hover{background:var(--blue-800)}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.card{background:var(--white);border:1px solid var(--gray-200);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-sm);transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;animation:fadeUp .2s ease both}
+.card:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card-stripe{height:5px}
+.card-body{padding:14px 16px;flex:1;display:flex;flex-direction:column;gap:8px}
+.card-top-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.card-title{font-size:15px;font-weight:700;color:var(--gray-900);line-height:1.35}
+.badge-mat{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.card-desc{font-size:13px;color:var(--gray-600);line-height:1.55}
+.card-by{font-size:11px;color:var(--gray-400);font-style:italic}
+.card-img{width:100%;max-height:160px;object-fit:cover;border-radius:8px;border:1px solid var(--gray-100)}
+.card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:10px;border-top:1px solid var(--gray-100)}
+.chip-date{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;background:var(--blue-50);color:var(--blue-800)}
+.chip-date.soon{background:var(--warning-bg);color:var(--warning)}
+.chip-date.today{background:var(--danger-bg);color:var(--danger)}
+.btn-del{background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:18px;width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.btn-del:hover{color:var(--danger);background:var(--danger-bg)}
+.empty-state{grid-column:1/-1;text-align:center;padding:4rem 1rem;color:var(--gray-400)}
+.empty-icon{font-size:52px;margin-bottom:12px}
+.empty-state h3{font-size:17px;font-weight:700;color:var(--gray-600);margin-bottom:6px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(4,44,83,.45);z-index:200;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:var(--r-xl);width:100%;max-width:420px;box-shadow:0 16px 48px rgba(4,44,83,.22);overflow:hidden;animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-header{background:var(--blue-900);padding:18px 22px;color:#fff}
+.modal-header h2{font-family:'Sora',sans-serif;font-size:16px;font-weight:700}
+.modal-header p{font-size:12px;color:var(--blue-200);margin-top:2px}
+.modal-body{padding:20px 22px;display:flex;flex-direction:column;gap:14px}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--gray-600);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.field input[type="text"],.field input[type="date"],.field textarea,.field select{width:100%;border:1.5px solid var(--gray-200);border-radius:var(--r-sm);padding:9px 12px;font-size:14px;font-family:'Nunito',sans-serif;color:var(--gray-900);background:var(--white);transition:border-color .15s;outline:none}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--blue-400)}
+.field textarea{height:80px;resize:none}
+.field-file-label{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border:1.5px dashed var(--gray-200);border-radius:var(--r-sm);cursor:pointer;font-size:13px;color:var(--gray-600);transition:all .15s;font-weight:700}
+.field-file-label:hover{border-color:var(--blue-400);color:var(--blue-600)}
+.field input[type="file"]{display:none}
+.img-preview-box{margin-top:8px;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--gray-200)}
+.img-preview-box img{width:100%;max-height:120px;object-fit:cover;display:block}
+.modal-footer{padding:0 22px 20px;display:flex;gap:10px;justify-content:flex-end}
+.btn-cancel-modal{background:none;border:1.5px solid var(--gray-200);border-radius:var(--r-sm);padding:9px 18px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;color:var(--gray-600)}
+.btn-save-modal{background:var(--blue-600);color:#fff;border:none;border-radius:var(--r-sm);padding:9px 22px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:background .15s}
+.btn-save-modal:hover{background:var(--blue-800)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--blue-900);color:#fff;padding:10px 22px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .25s;z-index:300;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.loader{position:fixed;inset:0;background:rgba(4,44,83,.35);z-index:400;display:flex;align-items:center;justify-content:center}
+.loader-box{background:#fff;border-radius:var(--r-lg);padding:1.5rem 2rem;font-size:14px;font-weight:700;color:var(--blue-800);display:flex;align-items:center;gap:12px}
+.spin{width:20px;height:20px;border:3px solid var(--blue-100);border-top-color:var(--blue-600);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hidden{display:none!important}
+@media(max-width:600px){
+  .topbar{padding:0 1rem}.main{padding:1.25rem 1rem 3rem}
+  .toolbar{flex-direction:column;align-items:flex-start}
+  .btn-new{width:100%;justify-content:center}
+  .group-field input{width:100%}.group-actions{flex-direction:column}
+  .field-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="brand"><div class="brand-icon">📚</div>Organizador Escolar</div>
+  <div class="topbar-date" id="topbar-date"></div>
+</nav>
+
+<div class="mode-bar">
+  <button class="mode-btn active" id="mode-btn-solo" onclick="setMode('solo')">👤 Individual</button>
+  <button class="mode-btn" id="mode-btn-group" onclick="setMode('group')">👥 Grupo</button>
+</div>
+
+<main class="main">
+  <!-- INDIVIDUAL -->
+  <div id="section-solo">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Minhas Atividades</div>
+        <div class="section-sub">Salvo só no seu dispositivo</div>
+      </div>
+      <button class="btn-new" onclick="openModal('solo')">＋ Nova atividade</button>
+    </div>
+    <div class="summary" id="summary-solo"></div>
+    <div class="toolbar"><div class="toolbar-left" id="tabs-solo"></div></div>
+    <div class="cards-grid" id="grid-solo"></div>
+  </div>
+
+  <!-- GRUPO -->
+  <div id="section-group" class="hidden">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Atividades do Grupo</div>
+        <div class="section-sub">Compartilhe o código com sua turma</div>
+      </div>
+    </div>
+
+    <!-- Status do servidor -->
+    <div class="server-banner" id="server-banner">
+      🔌 Verificando conexão com o servidor...
+    </div>
+
+    <div class="group-panel" id="group-join-panel">
+      <h3>🔗 Entrar em um grupo ou criar um novo</h3>
+      <div class="group-actions">
+        <div class="group-field">
+          <label>Seu nome</label>
+          <input type="text" id="g-username" placeholder="Ex: Ana Silva" maxlength="30">
+        </div>
+        <div class="group-field">
+          <label>Código do grupo</label>
+          <input type="text" id="g-code-input" placeholder="Ex: TURMA7A" maxlength="12" style="text-transform:uppercase">
+        </div>
+        <button class="btn-join" onclick="joinGroup()">Entrar no grupo</button>
+        <button class="btn-create" onclick="createGroup()">Criar novo grupo</button>
+      </div>
+    </div>
+
+    <div class="active-group-bar hidden" id="active-group-bar">
+      <div class="agb-left">
+        <div class="agb-dot"></div>
+        <div>
+          <div class="agb-name" id="agb-name"></div>
+          <div style="font-size:12px;color:var(--green-600);margin-top:2px">
+            Código: <span class="agb-code" id="agb-code" onclick="copyCode()" title="Clique para copiar"></span>
+          </div>
+        </div>
+      </div>
+      <div class="agb-btns">
+        <button class="btn-refresh" onclick="loadGroup()">🔄 Atualizar</button>
+        <button class="btn-leave" onclick="leaveGroup()">Sair do grupo</button>
+      </div>
+    </div>
+
+    <div class="hidden" id="group-add-bar" style="margin-bottom:1.25rem;display:flex;justify-content:flex-end">
+      <button class="btn-new" onclick="openModal('group')">＋ Nova atividade</button>
+    </div>
+
+    <div class="summary" id="summary-group"></div>
+    <div class="toolbar hidden" id="toolbar-group">
+      <div class="toolbar-left" id="tabs-group"></div>
+    </div>
+    <div class="cards-grid" id="grid-group"></div>
+  </div>
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>✏️ Nova atividade</h2>
+      <p id="modal-sub">Preencha os dados abaixo</p>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field">
+          <label>Título *</label>
+          <input type="text" id="f-title" placeholder="Ex: Lista de exercícios">
+        </div>
+        <div class="field">
+          <label>Matéria *</label>
+          <select id="f-materia">
+            <option>Matemática</option><option>Português</option><option>História</option>
+            <option>Geografia</option><option>Ciências</option><option>Biologia</option>
+            <option>Física</option><option>Química</option><option>Inglês</option>
+            <option>Artes</option><option>Ed. Física</option><option>Filosofia</option>
+            <option>Sociologia</option><option>Outra</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Descrição</label>
+        <textarea id="f-desc" placeholder="Detalhes, páginas, capítulos..."></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Data de entrega</label>
+          <input type="date" id="f-date">
+        </div>
+        <div class="field" id="f-author-field">
+          <label>Adicionado por</label>
+          <input type="text" id="f-author" placeholder="Seu nome" maxlength="30">
+        </div>
+      </div>
+      <div class="field">
+        <label>Foto (opcional)</label>
+        <label class="field-file-label" for="f-img">📎 Escolher imagem</label>
+        <input type="file" id="f-img" accept="image/*" onchange="previewImg(event)">
+        <div class="img-preview-box" id="img-preview-box" style="display:none">
+          <img id="img-preview" alt="preview">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel-modal" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save-modal" onclick="saveActivity()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  CONFIGURAÇÃO — mude aqui quando hospedar o servidor
+// ══════════════════════════════════════════════════════
+const API_BASE = 'https://organizador-escolar.onrender.com';
+// Depois de hospedar no Render/Railway, troque por:
+// const API_BASE = 'https://SEU-SERVIDOR.onrender.com';
+// ══════════════════════════════════════════════════════
+
+const SK_SOLO   = 'org_solo_v3';
+const SK_ACTIVE = 'org_active_v3';
+const SK_USER   = 'org_user_v3';
+
+let mode = 'solo';
+let soloActs = [], groupActs = [];
+let activeGroup = null;
+let soloTab = 'Todas', groupTab = 'Todas';
+let pendingImg = null, modalMode = 'solo';
+
+const MC = {
+  'Matemática':{s:'#378ADD',b:'#E6F1FB',t:'#0C447C'},'Português':{s:'#1D9E75',b:'#E1F5EE',t:'#085041'},
+  'História':{s:'#BA7517',b:'#FAEEDA',t:'#633806'},'Geografia':{s:'#3B6D11',b:'#EAF3DE',t:'#27500A'},
+  'Ciências':{s:'#0F6E56',b:'#E1F5EE',t:'#04342C'},'Biologia':{s:'#639922',b:'#EAF3DE',t:'#173404'},
+  'Física':{s:'#185FA5',b:'#E6F1FB',t:'#042C53'},'Química':{s:'#533AB7',b:'#EEEDFE',t:'#26215C'},
+  'Inglês':{s:'#378ADD',b:'#E6F1FB',t:'#0C447C'},'Artes':{s:'#D4537E',b:'#FBEAF0',t:'#4B1528'},
+  'Ed. Física':{s:'#639922',b:'#EAF3DE',t:'#173404'},'Filosofia':{s:'#533AB7',b:'#EEEDFE',t:'#26215C'},
+  'Sociologia':{s:'#888780',b:'#F1EFE8',t:'#2C2C2A'},'Outra':{s:'#888780',b:'#F1EFE8',t:'#2C2C2A'},
+};
+function mc(m){return MC[m]||{s:'#378ADD',b:'#E6F1FB',t:'#0C447C'}}
+
+// ─── INIT ─────────────────────────────────────────────────────────────
+function init(){
+  document.getElementById('topbar-date').textContent =
+    new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'long'});
+  try{soloActs=JSON.parse(localStorage.getItem(SK_SOLO)||'[]')}catch(e){soloActs=[]}
+  try{activeGroup=JSON.parse(localStorage.getItem(SK_ACTIVE)||'null')}catch(e){activeGroup=null}
+  purge(soloActs); saveSolo(); renderSolo();
+  if(activeGroup) restoreGroupUI();
+}
+
+function purge(arr){
+  const t=new Date();t.setHours(0,0,0,0);
+  for(let i=arr.length-1;i>=0;i--){
+    if(arr[i].date&&new Date(arr[i].date+'T00:00:00')<t) arr.splice(i,1);
+  }
+}
+function saveSolo(){localStorage.setItem(SK_SOLO,JSON.stringify(soloActs))}
+
+// ─── API ──────────────────────────────────────────────────────────────
+async function apiGet(code){
+  const r = await fetch(`${API_BASE}/group/${code}`);
+  if(!r.ok) throw new Error('Erro '+r.status);
+  return (await r.json()).activities || [];
+}
+async function apiSet(code, activities){
+  const r = await fetch(`${API_BASE}/group/${code}`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({activities})
+  });
+  if(!r.ok) throw new Error('Erro '+r.status);
+}
+async function checkServer(){
+  const banner = document.getElementById('server-banner');
+  try{
+    const r = await fetch(`${API_BASE}/health`,{signal: AbortSignal.timeout(4000)});
+    const d = await r.json();
+    banner.className='server-banner ok';
+    banner.textContent=`✅ Servidor conectado — ${d.groups} grupo(s), ${d.totalActivities} atividade(s) salvas`;
+  }catch(e){
+    banner.className='server-banner err';
+    banner.textContent='❌ Servidor offline. Verifique se o server.js está rodando em '+API_BASE;
+  }
+}
+
+// ─── MODE ─────────────────────────────────────────────────────────────
+function setMode(m){
+  mode=m;
+  document.getElementById('mode-btn-solo').classList.toggle('active',m==='solo');
+  document.getElementById('mode-btn-group').classList.toggle('active',m==='group');
+  document.getElementById('section-solo').classList.toggle('hidden',m!=='solo');
+  document.getElementById('section-group').classList.toggle('hidden',m!=='group');
+  if(m==='group'){checkServer();if(activeGroup)loadGroup();}
+}
+
+// ─── GRUPO ────────────────────────────────────────────────────────────
+function genCode(){
+  return Array.from({length:6},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+}
+async function createGroup(){
+  const user=document.getElementById('g-username').value.trim();
+  if(!user){showToast('⚠️ Informe seu nome');return}
+  const code=genCode();
+  localStorage.setItem(SK_USER,user);
+  activeGroup={code};
+  localStorage.setItem(SK_ACTIVE,JSON.stringify(activeGroup));
+  showLoader(true);
+  try{await apiSet(code,[]);restoreGroupUI();showToast('✅ Grupo criado! Código: '+code);}
+  catch(e){showToast('❌ Falha ao criar grupo. Servidor offline?');}
+  showLoader(false);
+}
+async function joinGroup(){
+  const user=document.getElementById('g-username').value.trim();
+  const code=document.getElementById('g-code-input').value.trim().toUpperCase();
+  if(!user){showToast('⚠️ Informe seu nome');return}
+  if(!code){showToast('⚠️ Informe o código');return}
+  localStorage.setItem(SK_USER,user);
+  activeGroup={code};
+  localStorage.setItem(SK_ACTIVE,JSON.stringify(activeGroup));
+  restoreGroupUI();
+  await loadGroup();
+  showToast('✅ Entrou no grupo '+code);
+}
+function restoreGroupUI(){
+  document.getElementById('group-join-panel').classList.add('hidden');
+  document.getElementById('active-group-bar').classList.remove('hidden');
+  document.getElementById('group-add-bar').classList.remove('hidden');
+  document.getElementById('toolbar-group').classList.remove('hidden');
+  document.getElementById('agb-name').textContent='Grupo '+activeGroup.code;
+  document.getElementById('agb-code').textContent=activeGroup.code;
+}
+function leaveGroup(){
+  activeGroup=null; localStorage.removeItem(SK_ACTIVE); groupActs=[];
+  document.getElementById('group-join-panel').classList.remove('hidden');
+  ['active-group-bar','group-add-bar','toolbar-group'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  ['grid-group','summary-group','tabs-group'].forEach(id=>{document.getElementById(id).innerHTML=''});
+}
+async function loadGroup(){
+  if(!activeGroup) return;
+  showLoader(true);
+  try{
+    groupActs=await apiGet(activeGroup.code);
+    purge(groupActs);
+    renderGroup();
+  }catch(e){showToast('❌ Erro ao carregar. Servidor offline?');}
+  showLoader(false);
+}
+function copyCode(){
+  if(!activeGroup) return;
+  navigator.clipboard.writeText(activeGroup.code).catch(()=>{});
+  showToast('📋 Código '+activeGroup.code+' copiado!');
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────
+function getDiff(ds){const t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(ds+'T00:00:00')-t)/86400000)}
+function fmtDate(ds){return new Date(ds+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function renderSummary(id,arr){
+  const tod=arr.filter(a=>a.date&&getDiff(a.date)===0).length;
+  const sn=arr.filter(a=>a.date&&getDiff(a.date)===1).length;
+  document.getElementById(id).innerHTML=`
+    <div class="sum-card"><div class="sum-label">Total</div><div class="sum-value">${arr.length}</div></div>
+    <div class="sum-card"><div class="sum-label">Matérias</div><div class="sum-value">${new Set(arr.map(a=>a.materia)).size}</div></div>
+    <div class="sum-card today"><div class="sum-label">Hoje</div><div class="sum-value">${tod}</div></div>
+    <div class="sum-card urgent"><div class="sum-label">Amanhã</div><div class="sum-value">${sn}</div></div>`;
+}
+function renderTabs(id,arr,tab,fn){
+  document.getElementById(id).innerHTML=['Todas',...new Set(arr.map(a=>a.materia))].map(m=>{
+    const n=m==='Todas'?arr.length:arr.filter(a=>a.materia===m).length;
+    return `<div class="tab${tab===m?' active':''}" onclick="${fn}('${esc(m)}')">${esc(m)}<span class="cnt">${n}</span></div>`;
+  }).join('');
+}
+function renderCards(id,arr,tab,delFn,showAuthor){
+  const filtered=tab==='Todas'?arr:arr.filter(a=>a.materia===tab);
+  const grid=document.getElementById(id);
+  if(!filtered.length){
+    grid.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><h3>Nenhuma atividade aqui</h3><p>Clique em "+ Nova atividade"!</p></div>`;
+    return;
+  }
+  grid.innerHTML=[...filtered].sort((a,b)=>!a.date?1:!b.date?-1:new Date(a.date)-new Date(b.date)).map(a=>{
+    const col=mc(a.materia);
+    let db='';
+    if(a.date){const d=getDiff(a.date);db=`<span class="chip-date ${d===0?'today':d===1?'soon':''}">${d===0?'🔴 Hoje!':d===1?'🟡 Amanhã':'📅 '+fmtDate(a.date)}</span>`;}
+    return `<div class="card">
+      <div class="card-stripe" style="background:${col.s}"></div>
+      <div class="card-body">
+        <div class="card-top-row">
+          <div class="card-title">${esc(a.title)}</div>
+          <span class="badge-mat" style="background:${col.b};color:${col.t}">${esc(a.materia)}</span>
+        </div>
+        ${a.desc?`<div class="card-desc">${esc(a.desc)}</div>`:''}
+        ${showAuthor&&a.author?`<div class="card-by">por ${esc(a.author)}</div>`:''}
+        ${a.img?`<img class="card-img" src="${a.img}" alt="imagem">`:''}
+        <div class="card-foot">${db}<button class="btn-del" onclick="${delFn}('${a.id}')">🗑️</button></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderSolo(){renderSummary('summary-solo',soloActs);renderTabs('tabs-solo',soloActs,soloTab,'setSoloTab');renderCards('grid-solo',soloActs,soloTab,'deleteSolo',false)}
+function renderGroup(){renderSummary('summary-group',groupActs);renderTabs('tabs-group',groupActs,groupTab,'setGroupTab');renderCards('grid-group',groupActs,groupTab,'deleteGroup',true)}
+function setSoloTab(t){soloTab=t;renderSolo()}
+function setGroupTab(t){groupTab=t;renderGroup()}
+
+// ─── DELETE ───────────────────────────────────────────────────────────
+function deleteSolo(id){if(!confirm('Remover?'))return;soloActs=soloActs.filter(a=>a.id!==id);saveSolo();renderSolo();showToast('🗑️ Removida')}
+async function deleteGroup(id){
+  if(!confirm('Remover do grupo?'))return;
+  groupActs=groupActs.filter(a=>a.id!==id);
+  showLoader(true);
+  try{await apiSet(activeGroup.code,groupActs);}catch(e){showToast('❌ Erro ao remover')}
+  showLoader(false);renderGroup();showToast('🗑️ Removida');
+}
+
+// ─── MODAL ────────────────────────────────────────────────────────────
+function openModal(m){
+  modalMode=m;
+  const d=new Date();d.setDate(d.getDate()+1);
+  document.getElementById('f-date').value=d.toISOString().split('T')[0];
+  ['f-title','f-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('img-preview-box').style.display='none';
+  pendingImg=null;
+  document.getElementById('f-author').value=localStorage.getItem(SK_USER)||'';
+  document.getElementById('f-author-field').style.display=m==='group'?'block':'none';
+  document.getElementById('modal-sub').textContent=m==='group'?'Visível para todos do grupo':'Salvo só no seu dispositivo';
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('f-title').focus(),100);
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open')}
+function previewImg(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{pendingImg=ev.target.result;document.getElementById('img-preview').src=pendingImg;document.getElementById('img-preview-box').style.display='block';};
+  r.readAsDataURL(f);
+}
+async function saveActivity(){
+  const title=document.getElementById('f-title').value.trim();
+  if(!title){document.getElementById('f-title').focus();showToast('⚠️ Informe o título');return}
+  const author=document.getElementById('f-author').value.trim();
+  if(modalMode==='group'&&!author){document.getElementById('f-author').focus();showToast('⚠️ Informe seu nome');return}
+  const act={id:Date.now().toString(),title,materia:document.getElementById('f-materia').value,
+    desc:document.getElementById('f-desc').value.trim(),date:document.getElementById('f-date').value,
+    img:pendingImg||null,author:author||null};
+  if(modalMode==='solo'){
+    soloActs.push(act);saveSolo();renderSolo();
+  }else{
+    groupActs.push(act);showLoader(true);
+    try{await apiSet(activeGroup.code,groupActs);}catch(e){showToast('❌ Erro ao salvar no servidor');groupActs.pop();showLoader(false);return;}
+    showLoader(false);renderGroup();
+    if(author)localStorage.setItem(SK_USER,author);
+  }
+  closeModal();showToast('✅ Atividade salva!');
+}
+
+// ─── UTILS ────────────────────────────────────────────────────────────
+function showLoader(v){
+  let el=document.getElementById('__loader');
+  if(!el){el=document.createElement('div');el.id='__loader';el.className='loader';el.innerHTML='<div class="loader-box"><div class="spin"></div>Sincronizando com o servidor...</div>';document.body.appendChild(el);}
+  el.style.display=v?'flex':'none';
+}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+
+document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+document.getElementById('g-code-input').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase()});
+
+init();
+</script>
+</body>
+</html>
